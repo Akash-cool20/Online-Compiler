@@ -4,11 +4,24 @@ import {  Select,  SelectContent,  SelectItem,  SelectTrigger,  SelectValue,} fr
 import { useDispatch, useSelector } from "react-redux";
 import {  CompilerSliceStateType,  updateCurrentLanguage,} from "@/redux/slices/complierSlice";
 import { RootState } from "@/redux/store";
+import { handleError } from "@/utils/handleError";
+import axios from "axios";
 
 export default function HelperHeader() {
 
   const dispath = useDispatch();
-  
+  const fullCode = useSelector((state:RootState)=>state.complierSlice.fullCode)
+  const handleSaveCode = async ()=>{
+    try {
+      const response = await axios.post("http://localhost:4000/compiler/save",{
+        fullCode:fullCode,
+      })
+      console.log(response.data);
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
   const currentLanguage = useSelector(
     (state: RootState) => state.complierSlice.currentLanguage
   );
@@ -18,6 +31,7 @@ export default function HelperHeader() {
   <div className="__helper_header h-[50x] bg-black text-white p-2 flex justify-between items-center">
       <div className="__btn_container flex gap-1">
         <Button
+          onClick={handleSaveCode}
           variant="success"
           className="flex justify-center items-center gap-2"
         >
