@@ -1,4 +1,4 @@
-import { Code, Copy, Save, Share2 } from "lucide-react";
+import { Code, Copy, Loader, Save, Share2 } from "lucide-react";
 import { Button } from "./ui/button";
 import {  Select,  SelectContent,  SelectItem,  SelectTrigger,  SelectValue,} from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
@@ -33,9 +33,6 @@ export default function HelperHeader() {
   );
   const handleSaveCode = async () => {
     try {
-      // const response = await axios.post("http://localhost:4000/compiler/save", {
-      //   fullCode: fullCode,
-      // });
       const response = await saveCode(fullCode).unwrap();
       navigate(`/compiler/${response.url}`, { replace: true });
     } catch (error) {
@@ -55,17 +52,24 @@ export default function HelperHeader() {
           variant="success"
           className="flex justify-center items-center gap-2"
           disabled={isLoading}
+          size="icon"
         >
-          {" "}
-          <Save size={14} />
-          {isLoading ? "Saving..." : " Save"}
+          {
+            isLoading ? (<><Loader /></>) : (
+              <>
+                <Save size={14}/>
+              </>
+            
+            )
+          }
         </Button>
         {shareBtn && (
           <Dialog>
-            <DialogTrigger className="whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-green-500 hover:bg-green-600 h-9 px-4 py-2 flex justify-center items-center gap-2">
-              <Share2 size={16} />
-              Share
-            </DialogTrigger>
+              <DialogTrigger asChild>
+                <Button size="icon" variant="success">
+                <Share2 size={16} />
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="flex gap-1 justify-center items-center">
