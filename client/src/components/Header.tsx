@@ -17,11 +17,11 @@ function Header() {
   async function handlerLogout(){
     try {
       await logout().unwrap();
-
-    } catch (error) {
-      handleError(error);
       dispatch(updateIsLoggedIn(false));
       dispatch(updateCurrentUser({}));
+    } catch (error) {
+      handleError(error);
+      
     }
   }
   return (
@@ -46,7 +46,8 @@ function Header() {
               </AvatarFallback>
             </Avatar>
             </li>
-          </> : 
+          </>
+           : 
          <>
             <li>
                 <Link to="/login"><Button variant="blue">Login</Button></Link>

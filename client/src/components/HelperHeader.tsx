@@ -1,4 +1,4 @@
-import { Code, Copy, Loader, Save, Share2 } from "lucide-react";
+import { Code, Copy, Download, Loader, Save, Share2 } from "lucide-react";
 import { Button } from "./ui/button";
 import {  Select,  SelectContent,  SelectItem,  SelectTrigger,  SelectValue,} from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
@@ -27,10 +27,55 @@ export default function HelperHeader() {
   }, [urlId]);
 
   const [saveCode, {isLoading}] = useSaveCodeMutation();
-  
   const fullCode = useSelector(
     (state: RootState) => state.complierSlice.fullCode
   );
+
+  const handlerDownloadCode =()=>{
+    if(fullCode.html === "" && fullCode.css === "" && fullCode.javascript === ""){
+      toast("Error : Code is Empty");
+    }else{
+      const htmlCode = new Blob([fullCode.html],{type:"text/html"});
+      const cssCode = new Blob([fullCode.css],{type:"text/css"});
+      const javascriptCode = new Blob([fullCode.javascript],{type:"text/javascript"});
+    
+
+      const htmlLink = document.createElement("a");
+      const cssLink = document.createElement("a");
+      const javascriptLink = document.createElement("a");
+
+      htmlLink.href=URL.createObjectURL(htmlCode);
+      htmlLink.download = "index.html";
+      document.body.appendChild(htmlLink);
+
+      cssLink.href=URL.createObjectURL(cssCode);
+      cssLink.download = "style.css";
+      document.body.appendChild(cssLink);
+
+      javascriptLink.href=URL.createObjectURL(javascriptCode);
+      javascriptLink.download = "script.js";
+      document.body.appendChild(javascriptLink);
+
+      
+
+      if(fullCode.html !== ""){
+        htmlLink.click();
+      }
+      if(fullCode.css !== ""){
+        cssLink.click();
+      }
+      if(fullCode.javascript !== ""){
+        javascriptLink.click();
+      }
+
+      document.body.removeChild(htmlLink);
+      document.body.removeChild(cssLink);
+      document.body.removeChild(javascriptLink);
+
+      toast("Code Downloaded Successfully");
+    }
+  }
+
   const handleSaveCode = async () => {
     try {
       const response = await saveCode(fullCode).unwrap();
@@ -63,6 +108,9 @@ export default function HelperHeader() {
             )
           }
         </Button>
+          <Button onClick={handlerDownloadCode} variant="blue" size="icon">
+            <Download size={14} />
+          </Button>
         {shareBtn && (
           <Dialog>
               <DialogTrigger asChild>

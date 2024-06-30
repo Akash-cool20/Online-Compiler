@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import  jwt  from "jsonwebtoken";
 import { User } from "../models/User";
-import { AuthRequest } from "../middlewares/verifytoken";
+import { AuthRequest } from "../middlewares/verifyToken";
 
 export const signup = async (req:Request, res:Response) => {
   const { username, email, password } = req.body;
@@ -22,7 +22,29 @@ export const signup = async (req:Request, res:Response) => {
       password: hashedPassword,
       username: username,
     });
-    return res.status(201).send({ user });
+    const jwtToken = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+      },
+      process.env.JWT_KEY!,{
+        expiresIn:"1d",
+      }
+    );
+
+    res.cookie("token", jwtToken, {
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    
+    return res.status(201).send({ 
+      username: user.username,
+      picture: user.picture,
+      email: user.email,
+      savedCodes: user.savedCodes, 
+    });
   } catch (error) {
     return res.status(500).send({ message: "Error signing up!", error: error });
   }
